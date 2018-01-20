@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<meta charset="utf-8">
+	<title>map test</title>
+	<style type="text/css">
+		#map {
+			height: 400px;
+			widht:100%;
+		}
+	</style>
+</head>
+<body>
+
+	<h1>Google Map Test</h1>
+	<div id="map"></div>
+
+	<form class="artist-form">
+        <input id="userInput" type="text">
+        <br>
+        <input id="artistSearch" type="submit" value="Search">
+    </form>
+   <div class="artist"></div>
+
+
+	<script type="text/javascript">
+
+		//var yelpLatitude;
+		//console.log(yelpLatitude);
+        var latitudeData = [];
+        console.log(latitudeData);
+        var longitudeData = [];
+        console.log(latitudeData);
+        var firstMap;
+
+        function createMap (){
+        var firstMap = {lat:latitudeData[0], lng:longitudeData[0]};
+        console.log(firstMap);
+
+        initMap(firstMap);
+
+        }
+
+		function initMap(firstMap){
+			var newMap = {
+				zoom: 6,
+				center:firstMap
+			};
+            console.log(firstMap);
+			
+			var map = new google.maps.Map(document.getElementById('map'), newMap);
+		}
+
+		
+
+	
+
+		
+			//console.log(latitudeObject);
+    
+function queryProxy(requestUrl, apiKey) {
+    //term = term.split(" ").join("%20");
+    const proxy = 'https://proxy.bhsplex.com/';
+    let response = undefined;
+    var requestUrl = 'http://api.bandsintown.com/artists/' + artistSearchTerm + '.json?api_version=2.0&app_id=project-4am';
+    $.ajax({
+        method: 'GET',
+        url: proxy + requestUrl,
+        headers: {
+            Authorization: 'Bearer ' + apiKey
+        }
+    }).done(function (data) {
+            console.log(requestUrl);
+            response = data;
+            for (var i = 0; i < 1; i++) {
+                var artist = data.name;
+                var artistImage = data.thumb_url;
+                var upcomingShowsCount = data.upcoming_event_count;
+                var artistTourDates = data.facebook_tour_dates_url;
+                var artistResult = $("<div class='artistRow'>");
+                var artistThumbImg = "<img class='artistImg' src='" + artistImage + "'>";
+                var artistShows = $("<div class='artistShowsUrl' src='" + artistTourDates + "'>");
+                var upcomingShows = $("<div class='showCount'" + upcomingShowsCount + "'>");
+                artistResult.append(artist);
+                artistShows.append(artistTourDates);
+                upcomingShows.append("Upcoming shows: " + upcomingShowsCount);
+
+                $(".artist").append(artistThumbImg, artistResult, upcomingShows, artistShows);
+            }//console.log(artist);
+            //console.log(artistImage);
+            //console.log(upcomingShowsCount);
+        })
+
+    return response;
+}
+
+
+function queryShows(showRequestUrl, apiKey) {
+    //var term = term.split(" ").join("%20");
+    const proxy = 'https://proxy.bhsplex.com/';
+    let response = undefined;
+    var showRequestUrl = "http://api.bandsintown.com/artists/" + artistSearchTerm + "/events.json?api_version=2.0&app_id=project-4am";
+    $.ajax({
+        method: "GET",
+        url: proxy + showRequestUrl,
+        headers:{
+            Authorization: "Bearer " + apiKey
+        }
+
+    }).done(function (data){
+        for (var i = 0; i < data.length; i++) {
+            var shows = data[i].title;
+            var showLocation = data[i].formatted_location;
+            var dateTime = data[i].formatted_datetime;
+            var saleDateTime = data[i].on_sale_datetime;
+            var ticketStatus = data[i].ticket_status;
+            var ticketUrl = data[i].ticket_url;
+            //These are the coordinates you want to precisely locate where the event is. If you dont need these and would prefer
+            //a venue name, let me know and I'll fix it.
+            var yelpLatitude = data[i].venue.latitude;
+            var yelpLongitude = data[i].venue.longitude;
+            var artistShowHeadline = $("<div class='show-headline'>");
+            var artistShowLocation = $("<div class='show-location'>");
+            var showDateTime = $("<div class='show-date-time'>");
+            var artistTicketStatus = $("<div class='ticket-status'>");
+            artistShowHeadline.append(shows);
+            artistShowLocation.append(showLocation);
+            showDateTime.append(dateTime);
+            artistTicketStatus.append("Tickets Status: " + ticketStatus);
+            latitudeData.push( yelpLatitude);
+            longitudeData.push(yelpLongitude);
+            $(".artist").append(artistShowHeadline, artistShowLocation, showDateTime, artistTicketStatus);
+            //console.log(shows);
+            //console.log(showLocation);
+            // Geo Coords are here
+            //console.log(yelpLatitude);
+            //console.log(yelpLongitude);
+            //Back to the boring stuff
+            //console.log(dateTime);
+            //console.log(saleDateTime);
+            //console.log("Ticket statuts: " + ticketStatus);
+            //console.log(ticketUrl);
+            
+			}
+
+             createMap();
+        //console.log(data);
+    })
+}
+
+
+$("#artistSearch").on("click", function () {
+    event.preventDefault();
+    var artistTerm = $("#userInput").val().trim();
+    artistSearchTerm = artistTerm.split(" ").join("%20");
+    //term.push(artistTerm);
+    $("#userInput").val("");
+    $(".artist").empty();
+    queryProxy(artistSearchTerm);
+    queryShows(artistSearchTerm);
+    //console.log("here is the 2nd: " + artistSearchTerm);
+});
+
+	</script>
+	 <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBfvIyLMsJKnYcceo9WP_qLsOOwzo5Ztp0&callback=initMap"
+    async defer></script>
+
+</body>
+</html>
