@@ -25,32 +25,27 @@
 
 
 	<script type="text/javascript">
-
-		//var yelpLatitude;
-		//console.log(yelpLatitude);
-        var latitudeData = [];
+		var latitudeData = [];
         console.log(latitudeData);
         var longitudeData = [];
         console.log(latitudeData);
-        var firstMap;
+        var map;
+     
+		function initMap(){
 
-        function createMap (){
-        var firstMap = {lat:latitudeData[0], lng:longitudeData[0]};
-        console.log(firstMap);
+	    map = new google.maps.Map(document.getElementById('map'), {
+				zoom: 4,
+				
+				
+			});
 
-        initMap(firstMap);
-
-        }
-
-		function initMap(firstMap){
-			var newMap = {
-				zoom: 6,
-				center:firstMap
-			};
-            console.log(firstMap);
 			
-			var map = new google.maps.Map(document.getElementById('map'), newMap);
-		}
+
+		   }
+
+		
+
+		
 
 		
 
@@ -141,10 +136,30 @@ function queryShows(showRequestUrl, apiKey) {
             //console.log(saleDateTime);
             //console.log("Ticket statuts: " + ticketStatus);
             //console.log(ticketUrl);
+            var marker = new google.maps.Marker({
+             position: {lat:latitudeData[i], lng: longitudeData[i]},
+             map: map
+              });
             
 			}
 
-             createMap();
+			 var firstMap = {lat:latitudeData[0], lng:longitudeData[0]};
+			 map.setCenter(firstMap);
+
+
+
+			
+
+		    
+            //console.log(firstMap);
+			
+			//var map = new google.maps.Map(document.getElementById('map'), newMap);
+		
+		
+
+             //createMap();
+             //newMarker();
+           
         //console.log(data);
     })
 }
